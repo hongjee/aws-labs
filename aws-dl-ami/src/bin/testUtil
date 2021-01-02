@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+function cd_to_home_dir {
+    cat /etc/os-release | grep 'Ubuntu'
+    RETVAL_UL=$?
+    cat /etc/os-release | grep 'Amazon'
+    RETVAL_AML=$?
+    if [ $RETVAL_UL -eq 0 ]; then
+        HOMEDIR=/home/ubuntu
+    elif [ $RETVAL_AML -eq 0 ]; then
+        HOMEDIR=/home/ec2-user
+    else
+        echo "Error: OS not recognized as either Ubuntu or Amazon Linux"
+        exit 1
+    fi
+    cd $HOMEDIR
+}

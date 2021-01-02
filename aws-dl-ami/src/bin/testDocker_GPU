@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+set -e
+docker run hello-world
+PRETTY_NAME=$(cat /etc/os-release | grep PRETTY_NAME)
+if echo $PRETTY_NAME | grep -q "Amazon Linux AMI 2018.03"; then
+    docker run --runtime=nvidia --rm nvidia/cuda:10.2-runtime nvidia-smi
+else
+    docker run --runtime=nvidia --rm nvidia/cuda:11.0-runtime nvidia-smi
+fi
+
+set +e

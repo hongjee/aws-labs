@@ -1,0 +1,20 @@
+#!/bin/bash
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+. ~/src/bin/testUtil
+cd_to_home_dir
+HOME_DIR=$(echo $PWD)
+MXNET_BIN_DIR=${HOME_DIR}/src/integration_test/conda/mxnet
+MXNET_REPO_DIR=${MXNET_BIN_DIR}/repo
+
+git clone -b v1.4.x https://github.com/apache/incubator-mxnet.git ${MXNET_REPO_DIR}
+
+source activate mxnet_p36
+${MXNET_BIN_DIR}/testMXNetHelper python || exit 1
+conda deactivate
+
+source activate mxnet_latest_p37
+${MXNET_BIN_DIR}/testMXNetHelper python || exit 1
+source deactivate
+
+exit 0

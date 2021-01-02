@@ -1,0 +1,36 @@
+#!/bin/bash
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+. ~/.bashrc
+. ~/src/bin/testUtil
+cd_to_home_dir
+HOME_DIR=`echo $PWD`
+SRC_DIR=${HOME_DIR}/src
+PRETTY_NAME=$(cat /etc/os-release| grep PRETTY_NAME)
+
+# Just in case
+rm -rf /tmp/mnist_model/
+
+cd ${SRC_DIR}
+git clone https://github.com/tensorflow/serving.git
+cd serving
+git checkout r1.15
+
+if echo $PRETTY_NAME | grep -q "Amazon Linux AMI 2018.03"; then
+  source activate tensorflow_p36
+else
+  source activate tensorflow_p37
+fi
+
+python tensorflow_serving/example/mnist_saved_model.py models/mnist || exit 1
+
+tensorflow_model_server --port=9000 --model_name=mnist --model_base_path=${SRC_DIR}/serving/models/mnist &
+SERVER_PID=$!
+
+python tensorflow_serving/example/mnist_client.py --num_tests=1000 --server=127.0.0.1:9000 || exit 1
+
+kill -9 $SERVER_PID
+conda deactivate
+rm -rf models
+
+exit 0

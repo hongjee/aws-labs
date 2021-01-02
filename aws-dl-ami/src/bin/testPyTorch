@@ -1,0 +1,26 @@
+#!/bin/bash
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+. ~/.bashrc
+
+HOME_DIR=$(echo $PWD)
+PRETTY_NAME=$(cat /etc/os-release| grep PRETTY_NAME)
+
+cd ~/src
+git clone https://github.com/pytorch/examples.git pytorch_examples
+cd pytorch_examples
+# 1.0.0 examples are not available yet
+git checkout 0.4
+cd mnist
+
+source activate pytorch_p36
+python main.py || exit 1
+source deactivate
+
+if echo $PRETTY_NAME | grep -q "Amazon Linux AMI 2018.03"; then
+  source activate pytorch_latest_p36
+else
+  source activate pytorch_latest_p37
+fi
+python main.py || exit 1
+source deactivate

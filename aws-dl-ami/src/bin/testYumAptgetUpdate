@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+cd ~/
+if [ "`pwd`" = "/home/ubuntu" ]; then
+    sudo apt-get -y update
+else
+    sudo yum -y update
+fi
+
+exit 0

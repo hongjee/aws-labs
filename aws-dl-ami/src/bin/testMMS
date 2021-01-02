@@ -1,0 +1,71 @@
+#!/bin/bash
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+. ~/src/bin/testUtil
+cd_to_home_dir
+HOME_DIR=$(echo $PWD)
+MMS_LOG=/tmp/MMS
+MMS_LOG2=/tmp/MMS2
+MMS_LOG3=/tmp/MMS3
+MMS_LOG4=/tmp/MMS4
+
+# This script need the config.properties file in examples folder. It's uplaoded in build steps
+CONFIG_FILE=${HOME_DIR}/examples/multi-model-server/config.properties
+
+set -e
+function start_mms_server() {
+  multi-model-server \
+  --start --models squeezenet=https://s3.amazonaws.com/model-server/model_archive_1.0/squeezenet_v1.1.mar \
+  --mms-config=${CONFIG_FILE} & >> ${MMS_LOG}
+  echo "Model server started with process id" $!
+  echo `uptime`
+  sleep 40
+  curl -X PUT localhost:8081/models/squeezenet?min_worker=1 >> ${MMS_LOG}
+  echo `uptime`
+}
+
+function stop_mms_server() {
+  multi-model-server --stop
+  echo "Model server stopped"
+  sleep 10
+}
+
+# Download it on fly
+curl -O https://s3.amazonaws.com/model-server/inputs/kitten.jpg
+
+
+source activate mxnet_p36
+# Let the old server die completly
+sleep 20
+start_mms_server
+curl -X POST http://127.0.0.1:8080/predictions/squeezenet -F "data=@kitten.jpg" > ${MMS_LOG3}
+cat ${MMS_LOG3} | grep "Egyptian cat"
+RETVALAML=$?
+stop_mms_server
+if [[ $RETVALAML -ne 0 ]]; then
+   exit  1
+fi
+source deactivate
+
+source activate mxnet_latest_p37
+# Let the old server die completly
+sleep 20
+start_mms_server
+curl -X POST http://127.0.0.1:8080/predictions/squeezenet -F "data=@kitten.jpg" > ${MMS_LOG4}
+cat ${MMS_LOG4} | grep "Egyptian cat"
+RETVALAML=$?
+stop_mms_server
+if [[ $RETVALAML -ne 0 ]]; then
+   exit  1
+fi
+source deactivate
+
+# delete all the files
+rm -rf ${MMS_LOG2}
+rm -rf ${MMS_LOG3}
+rm -rf ${MMS_LOG4}
+rm -rf ./kitten.jpg
+rm -rf ./mms_app.log
+rm -rf ./squeezenet_v1.1*
+
+exit 0

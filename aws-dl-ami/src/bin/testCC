@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+. ~/src/bin/testUtil
+cd_to_home_dir
+HOME_DIR=`echo $PWD`
+BIN_DIR=${HOME_DIR}/src/integration_test/base
+TEST_DIR=$BIN_DIR/testScripts/test-CC
+
+set -e
+
+PRETTY=$(cat /etc/os-release| grep PRETTY_NAME)
+echo $PRETTY ### printing to help debug if testCC fails
+GCC_EXPECTED=""
+GXX_EXPECTED=""
+
+if echo $PRETTY | grep -q "Amazon Linux AMI 2018.03"; then
+  GCC_EXPECTED="4.8.5"
+  GXX_EXPECTED="4.8.5"
+elif echo $PRETTY | grep -q "Amazon Linux 2"; then
+	# If AML2 and Ubuntu18 updates GCC to newer version, then test would fail, so asserting just major version
+  GCC_EXPECTED=" 7." # asserting space to make sure its major version
+  GXX_EXPECTED=" 7."
+elif echo $PRETTY | grep -q "Ubuntu 16.04"; then
+  GCC_EXPECTED="5.4.0"
+  GXX_EXPECTED="5.4.0"
+elif echo $PRETTY | grep -q "Ubuntu 18.04"; then
+  GCC_EXPECTED=" 7."
+  GXX_EXPECTED=" 7."
+else
+  # Could not determine source OS
+  exit 1
+fi
+
+gcc --version ### printing to help debug if testCC fails
+
+gcc --version | grep -q "$GCC_EXPECTED"
+g++ --version | grep -q "$GXX_EXPECTED"
+
+gcc -o testGCC $TEST_DIR/testGCC.c
+./testGCC
+
+g++ -o testGXX $TEST_DIR/testGXX.cpp
+./testGXX

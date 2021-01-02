@@ -1,0 +1,38 @@
+How to enable GPU monitoring on CloudWatch (https://aws.amazon.com/cloudwatch/)
+
+1. Create an IAM user and attach the following policy from your AWS account
+   {  
+    "Version": "2012-10-17",   
+    "Statement": [     
+         {       
+             "Action": [         
+                 "cloudwatch:PutMetricData",         
+              ],       
+              "Effect": "Allow",       
+              "Resource": "*"     
+         }   
+     ] 
+   }
+   or alternatively you can attch above policy to existing user.
+
+2. Run `aws configure` and provide details based on credentials of user which has the above policy on instance.
+
+3. You can set following variable for your workload on your instance in gpumon.py. Below values are default.
+   ###CHOOSE NAMESPACE PARAMETERS HERE###
+   my_NameSpace = 'DeepLearningTrain'
+   ### CHOOSE PUSH INTERVAL ####
+   sleep_interval = 10
+   ### CHOOSE STORAGE RESOLUTION (BETWEEN 1-60) ####
+   store_reso = 60
+
+4. Update the regions where your instance is running
+   	
+   ### CHOOSE REGION ####
+   EC2_REGION = 'us-east-1' 
+
+5. Currently this script only runs on python3.
+   Run `python3 gpumon.py &`.
+
+6. Go to Cloudwatch and select Metrics. You will find the custom namespace 'DeepLearningTrain' under metric. Feel free to select the metrics which are relevant to you. The scripts supports GPU usage, GPU memory usage, GPU temperature and GPU Power usage.
+
+For complete reference you can follow blog https://aws.amazon.com/blogs/machine-learning/monitoring-gpu-utilization-with-amazon-cloudwatch/

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+set -e
+cd ~/
+if [ "`pwd`" = "/home/ubuntu" ]; then
+    # Install, run and uninstall nscd or any OS package -- twice in a row to ensure uninstall does not affect install. 
+    sudo apt-get install -y nscd && \
+    sudo systemctl start nscd && \
+    sudo systemctl stop nscd && \
+    sudo apt-get remove -y nscd && \
+    sudo apt-get purge -y nscd
+
+    sudo apt-get install -y nscd && \
+    sudo systemctl start nscd && \
+    sudo systemctl stop nscd && \
+    sudo apt-get remove -y nscd && \
+    sudo apt-get purge -y nscd
+else
+    yes | sudo yum install nscd && \
+    sudo service nscd start && \
+    sudo service nscd stop && \
+    yes | sudo yum remove nscd
+
+    yes | sudo yum install nscd && \
+    sudo service nscd start && \
+    sudo service nscd stop && \
+    yes | sudo yum remove nscd
+fi
+set +e
