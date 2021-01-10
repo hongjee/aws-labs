@@ -18,3 +18,5 @@
 [tweets-text-classification: Text Classification with TF & Keras](tweets-text-classification/Text%20Classification%20with%20TF%20%26%20Keras.ipynb)
 
 [unsupervised-learning-clustering-k-means](unsupervised-learning-clustering-k-means/unsupervised-learning-clustering-k-means.ipynb)
+
+[practical-text-classification-python-keras](practical-text-classification-python-keras/practical-text-classification-python-keras.ipynb)
