@@ -22,3 +22,5 @@
 [practical-text-classification-python-keras](practical-text-classification-python-keras/practical-text-classification-python-keras.ipynb)
 
 [linear-regression-python](linear-regression-python/linear-regression-python.ipynb)
+
+[face-detection-python](face-detection-python/face-detection-python.ipynb)
