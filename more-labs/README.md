@@ -24,3 +24,5 @@
 [linear-regression-python](linear-regression-python/linear-regression-python.ipynb)
 
 [face-detection-python](face-detection-python/face-detection-python.ipynb)
+
+[twitter-sentiment-python-docker-elasticsearch-kibana](twitter-sentiment-python-docker-elasticsearch-kibana)
